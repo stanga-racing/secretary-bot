@@ -1,7 +1,8 @@
 (ns stanga.main
   (:require [clojure.tools.logging :as log]
             [com.stuartsierra.component :as component]
-            [stanga.system :as system]))
+            [stanga.system :as system])
+  (:gen-class))
 
 (defn- add-shutdown-hook [system]
   (.addShutdownHook
