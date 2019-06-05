@@ -2,17 +2,20 @@
   (:require [clj-time.core :as t]
             [clj-time.format :as f]
             [stanga.sheets-client :as sheets]
-            [stanga.slack :as slack]))
+            [stanga.slack :as slack]
+            [clojure.tools.logging :as log]))
 
 (defprotocol App
   (run [this]))
 
 (def date-formatter (f/formatter "dd.MM.yyyy"))
 
+(def notification-treshold-days 4)
+
 (defn- should-remind? [race]
   (when-let [deadline (:deadline race)]
     (t/within? (t/interval (t/now)
-                           (t/from-now (t/days 4)))
+                           (t/from-now (t/days notification-treshold-days)))
                deadline)))
 
 (defn- format-date [date]
@@ -34,8 +37,9 @@
   (run [this]
     (let [races (->> (sheets/get-races config)
                      (transduce xform-reminders conj))]
-      (when (< 0 (count races))
+      (if (< 0 (count races))
         (let [msg (str "<!channel> Stangan automatisoitu sihteeri tässä hei! Seuraavien kilpailuiden ilmoittautumisten deadline lähestyy:"
                        "\n\n"
                        (clojure.string/join "\n" races))]
-          (slack/send-message config msg))))))
+          (slack/send-message config msg))
+        (log/info (str "No enrollment deadlines within next " notification-treshold-days " days"))))))
