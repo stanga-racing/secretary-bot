@@ -33,8 +33,9 @@
 
   (run [this]
     (let [races (->> (sheets/get-races config)
-                     (transduce xform-reminders conj))
-          msg   (str "<!channel> Stangan automatisoitu sihteeri tässä hei! Seuraavien kilpailuiden ilmoittautumisten deadline lähestyy:"
-                     "\n\n"
-                     (clojure.string/join "\n" races))]
-      (slack/send-message config msg))))
+                     (transduce xform-reminders conj))]
+      (when (< 0 (count races))
+        (let [msg (str "<!channel> Stangan automatisoitu sihteeri tässä hei! Seuraavien kilpailuiden ilmoittautumisten deadline lähestyy:"
+                       "\n\n"
+                       (clojure.string/join "\n" races))]
+          (slack/send-message config msg))))))
