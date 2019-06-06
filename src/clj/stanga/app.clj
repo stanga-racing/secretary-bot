@@ -1,9 +1,9 @@
 (ns stanga.app
   (:require [clj-time.core :as t]
             [clj-time.format :as f]
+            [clojure.tools.logging :as log]
             [stanga.sheets-client :as sheets]
-            [stanga.slack :as slack]
-            [clojure.tools.logging :as log]))
+            [stanga.slack :as slack]))
 
 (defprotocol App
   (run [this]))
