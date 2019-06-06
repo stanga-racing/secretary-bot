@@ -14,7 +14,7 @@
 
 (defn- should-remind? [race]
   (when-let [deadline (:deadline race)]
-    (t/within? (t/interval (t/now)
+    (t/within? (t/interval (t/today-at-midnight)
                            (t/from-now (t/days notification-treshold-days)))
                deadline)))
 
