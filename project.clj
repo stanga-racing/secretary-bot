@@ -12,5 +12,5 @@
                  [jarohen/chime "0.2.2"]
                  [net.cgrand/xforms "0.19.0"]]
   :source-paths ["src/clj"]
-  :main stanga.main
+  :main ^:skip-aot stanga.main
   :aot [stanga.main])
