@@ -1,0 +1,93 @@
+version: 2.1
+
+executors:
+  docker_publisher:
+    docker:
+      - image: docker:latest
+
+jobs:
+  checkout_code:
+    working_directory: ~/secretary_bot
+    docker:
+      - image: alpine:latest
+    steps:
+      - run:
+          name: Install CA Certificates
+          command: apk add --no-cache ca-certificates
+      - checkout
+      - save_cache:
+          name: Saving Git Repository To Cache
+          key: v1_repo-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/secretary_bot
+
+  build_docker_image:
+    working_directory:
+      ~/secretary_bot
+    executor: docker_publisher
+    steps:
+      - restore_cache:
+          name: Restoring Git Repository From Cache
+          key: v1_repo-{{ .Environment.CIRCLE_SHA }}
+      - setup_remote_docker
+      - run:
+          name: Build Docker Image
+          command: |
+            docker build \
+              --rm \
+              -t $HEROKU_APP_NAME \
+              -f src/docker/Dockerfile \
+              .
+      - run:
+          name: Tag Docker Image
+          command: |
+            docker tag \
+              $HEROKU_APP_NAME:latest \
+              registry.heroku.com/$HEROKU_APP_NAME/worker
+      - run:
+          name: Initialize Cache Directory For Docker Image
+          command: |
+            mkdir ~/secretary_bot/docker
+      - run:
+          name: Archive Docker Image
+          command: |
+            docker save -o ~/secretary_bot/docker/image.tar $HEROKU_APP_NAME
+      - save_cache:
+          name: Saving Docker Image To Cache
+          key: v1_docker-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/secretary_bot/docker
+
+  deploy_docker_image:
+    working_directory:
+      ~/secretary-bot
+    executor: docker_publisher
+    steps:
+      - restore_cache:
+          name: Restoring Docker Image From Cache
+          key: v1_docker-{{ .Environment.CIRCLE_SHA1 }}
+      - setup_remote_docker
+      - run:
+          name: Load Docker Image
+          command: |
+            docker load -i ~/secretary_bot/docker/image.tar
+      - run:
+          name: Login to Heroku's Docker Registry
+          command: |
+            docker login -u $HEROKU_USERNAME -p $HEROKU_API_KEY registry.heroku.com
+      - run:
+          name: Push Image to Heroku's Docker Registry
+          command: |
+            docker push registry.heroku.com/$HEROKU_APP_NAME/worker
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - checkout_code
+      - build_docker_image:
+          requires:
+            - checkout_code
+      - deploy_docker_image:
+          requires:
+            - build_docker_image
