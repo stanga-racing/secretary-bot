@@ -13,4 +13,7 @@
                  [net.cgrand/xforms "0.19.0"]]
   :source-paths ["src/clj"]
   :main ^:skip-aot stanga.main
-  :aot [stanga.main])
+  :aot [stanga.main]
+  :profiles {:dev {:dependencies [[reloaded.repl "0.2.4"]]
+                   :repl-options {:init-ns user}
+                   :source-paths ["src/dev"]}})
