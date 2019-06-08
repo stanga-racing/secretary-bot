@@ -71,14 +71,14 @@ jobs:
             docker tag \
               $HEROKU_APP_NAME:latest \
               registry.heroku.com/$HEROKU_APP_NAME/worker
-      - run:
-          name: Login to Heroku's Docker Registry
-          command: |
-            docker login -u $HEROKU_USERNAME -p $HEROKU_API_KEY registry.heroku.com
-      - run:
-          name: Push Image to Heroku's Docker Registry
-          command: |
-            docker push registry.heroku.com/$HEROKU_APP_NAME/worker
+#      - run:
+#          name: Login to Heroku's Docker Registry
+#          command: |
+#            docker login -u $HEROKU_USERNAME -p $HEROKU_API_KEY registry.heroku.com
+#      - run:
+#          name: Push Image to Heroku's Docker Registry
+#          command: |
+#            docker push registry.heroku.com/$HEROKU_APP_NAME/worker
 
 workflows:
   version: 2
