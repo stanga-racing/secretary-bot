@@ -9,8 +9,10 @@
                  [clj-time "0.15.0"]
                  [com.stuartsierra/component "0.4.0"]
                  [environ "1.1.0"]
+                 [hikari-cp "2.7.1"]
                  [jarohen/chime "0.2.2"]
-                 [net.cgrand/xforms "0.19.0"]]
+                 [net.cgrand/xforms "0.19.0"]
+                 [org.postgresql/postgresql "42.2.5"]]
   :source-paths ["src/clj"]
   :main ^:skip-aot stanga.main
   :aot [stanga.main]
