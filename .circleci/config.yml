@@ -39,12 +39,6 @@ jobs:
               -f src/docker/Dockerfile \
               .
       - run:
-          name: Tag Docker Image
-          command: |
-            docker tag \
-              $HEROKU_APP_NAME:latest \
-              registry.heroku.com/$HEROKU_APP_NAME/worker
-      - run:
           name: Initialize Cache Directory For Docker Image
           command: |
             mkdir ~/secretary_bot/docker
@@ -71,6 +65,12 @@ jobs:
           name: Load Docker Image
           command: |
             docker load -i ~/secretary_bot/docker/image.tar
+      - run:
+          name: Tag Docker Image
+          command: |
+            docker tag \
+              $HEROKU_APP_NAME:latest \
+              registry.heroku.com/$HEROKU_APP_NAME/worker
       - run:
           name: Login to Heroku's Docker Registry
           command: |
