@@ -23,7 +23,9 @@
          database] (clojure.string/split
                      (e/env :database-url)
                      #"[:\/@]")]
-    {:url      (str "jdbc:postgres://"
+    {:adapter  "postgresql"
+     :database database
+     :jdbc-url (str "jdbc:postgres://"
                     url
                     ":"
                     port

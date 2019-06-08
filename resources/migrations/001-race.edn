@@ -1,0 +1,7 @@
+{:up   ["CREATE TABLE race (
+           race_id BIGINT NOT NULL,
+           race_date TIMESTAMP NOT NULL,
+           race_deadline TIMESTAMP,
+           PRIMARY KEY (race_id)
+         );"]
+ :down ["DROP TABLE race;"]}

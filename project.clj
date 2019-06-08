@@ -12,10 +12,13 @@
                  [hikari-cp "2.7.1"]
                  [jarohen/chime "0.2.2"]
                  [net.cgrand/xforms "0.19.0"]
-                 [org.postgresql/postgresql "42.2.5"]]
+                 [org.postgresql/postgresql "42.2.5"]
+                 [org.slf4j/slf4j-log4j12 "1.7.26"]
+                 [ragtime "0.8.0"]]
   :source-paths ["src/clj"]
   :main ^:skip-aot stanga.main
   :aot [stanga.main]
   :profiles {:dev {:dependencies [[reloaded.repl "0.2.4"]]
                    :repl-options {:init-ns user}
-                   :source-paths ["src/dev"]}})
+                   :source-paths ["src/dev"]}}
+  :aliases {"undo-migration" ["trampoline" "run" "-m" "undo-migration"]})

@@ -6,13 +6,14 @@
   component/Lifecycle
 
   (start [this]
-    (let [db-spec {:adapter           "postgresql"
-                   :auto-commit       false
-                   :jdbc-url          (-> config :database :url)
-                   :maximum-pool-size 10
-                   :minimum-idle      10
-                   :username          (-> config :database :username)
-                   :password          (-> config :database :password)}]
+    (let [db-config (:database config)
+          db-spec   (merge {:auto-commit       false
+                            :maximum-pool-size 10
+                            :minimum-idle      10}
+                           (select-keys db-config [:adapter
+                                                   :jdbc-url
+                                                   :username
+                                                   :password]))]
       (assoc this :datasource (pool/make-datasource db-spec))))
 
   (stop [this]

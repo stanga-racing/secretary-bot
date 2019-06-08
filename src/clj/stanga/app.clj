@@ -40,6 +40,6 @@
       (if (< 0 (count races))
         (let [msg (str "<!channel> Stangan automatisoitu sihteeri tässä hei! Seuraavien kilpailuiden ilmoittautumisten deadline lähestyy:"
                        "\n\n"
-                       (clojure.string/join "\n" races))]
-          (slack/send-message config msg))
+                       (clojure.string/join "\n" races))])
+        ;(slack/send-message config msg))
         (log/info (str "No enrollment deadlines within next " notification-treshold-days " days"))))))
