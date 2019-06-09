@@ -1,9 +1,4 @@
-FROM alpine:latest AS build
-
-RUN apk add --no-cache bash openjdk8
-
-RUN wget https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein -O /usr/local/bin/lein
-RUN chmod 755 /usr/local/bin/lein
+FROM stangaracing/stanga-secretary-bot-build:latest AS build
 
 RUN mkdir -p /build/src
 COPY project.clj /build/
