@@ -3,11 +3,6 @@ version: 2.1
 orbs:
   heroku: circleci/heroku@0.0.8
 
-executors:
-  docker_publisher:
-    docker:
-      - image: stangaracing/stanga-secretary-bot-build:latest
-
 jobs:
   checkout_code:
     working_directory: ~/secretary_bot
@@ -24,7 +19,8 @@ jobs:
   build_docker_image:
     working_directory:
       ~/secretary_bot
-    executor: docker_publisher
+    docker:
+      - image: docker:latest
     steps:
       - restore_cache:
           name: Restoring Git Repository From Cache
@@ -55,7 +51,8 @@ jobs:
   deploy_docker_image:
     working_directory:
       ~/secretary_bot
-    executor: docker_publisher
+    docker:
+      - image: stangaracing/stanga-secretary-bot-build:latest
     steps:
       - restore_cache:
           name: Restoring Docker Image From Cache
