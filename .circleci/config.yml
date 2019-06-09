@@ -27,7 +27,7 @@ jobs:
     steps:
       - restore_cache:
           name: Restoring Git Repository From Cache
-          key: v1_repo-{{ .Environment.CIRCLE_SHA }}
+          key: v1_repo-{{ .Environment.CIRCLE_SHA1 }}
       - setup_remote_docker
       - run:
           name: Build Docker Image
@@ -53,7 +53,7 @@ jobs:
 
   deploy_docker_image:
     working_directory:
-      ~/secretary-bot
+      ~/secretary_bot
     executor: docker_publisher
     steps:
       - restore_cache:
