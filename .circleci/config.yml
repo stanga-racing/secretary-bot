@@ -16,6 +16,25 @@ jobs:
           paths:
             - ~/secretary_bot
 
+  build_application:
+    working_directory: ~/secretary_bot
+    docker:
+      - image: circleci/clojure:latest
+        user: root
+    steps:
+      - restore_cache:
+          name: Restoring Git Repository From Cache
+          key: v1_repo-{{ .Environment.CIRCLE_SHA1 }}
+      - run:
+          name: Build Uberjar
+          command: |
+            lein uberjar
+      - save_cache:
+          name: Saving Uberjar To Cache
+          key: v1_uberjar-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/secretary_bot/target
+
   build_docker_image:
     working_directory:
       ~/secretary_bot
@@ -25,6 +44,9 @@ jobs:
       - restore_cache:
           name: Restoring Git Repository From Cache
           key: v1_repo-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          name: Restoring Uberjar From Cache
+          key: v1_uberjar-{{ .Environment.CIRCLE_SHA1 }}
       - setup_remote_docker
       - run:
           name: Build Docker Image
@@ -86,8 +108,12 @@ workflows:
   build:
     jobs:
       - checkout_code
+      - build_application:
+          requires:
+            - checkout_code
       - build_docker_image:
           requires:
+            - build_application
             - checkout_code
       - deploy_docker_image:
           requires:
