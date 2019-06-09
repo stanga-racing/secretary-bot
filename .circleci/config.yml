@@ -74,7 +74,7 @@ jobs:
       - run:
           name: Login to Heroku's Docker Registry
           command: |
-            docker login -u $HEROKU_USERNAME -p $HEROKU_API_KEY registry.heroku.com
+            echo $HEROKU_API_KEY | docker login -u $HEROKU_USERNAME --password-stdin registry.heroku.com
       - run:
           name: Push Image to Heroku's Docker Registry
           command: |
