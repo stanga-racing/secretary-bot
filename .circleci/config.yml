@@ -6,17 +6,13 @@ orbs:
 executors:
   docker_publisher:
     docker:
-      - image: docker:latest
+      - image: stangaracing/stanga-secretary-bot-build:latest
 
 jobs:
   checkout_code:
     working_directory: ~/secretary_bot
-    docker:
-      - image: alpine:latest
+    executor: docker_publisher
     steps:
-      - run:
-          name: Install CA Certificates
-          command: apk add --no-cache ca-certificates
       - checkout
       - save_cache:
           name: Saving Git Repository To Cache
@@ -64,14 +60,6 @@ jobs:
           name: Restoring Docker Image From Cache
           key: v1_docker-{{ .Environment.CIRCLE_SHA1 }}
       - setup_remote_docker
-      - run:
-          name: Install Heroku CLI Dependencies
-          command: |
-            apk add --no-cache bash curl nodejs
-      - run:
-          name: Install Heroku CLI
-          command: |
-            curl https://cli-assets.heroku.com/install.sh | sh
       - run:
           name: Load Docker Image
           command: |
