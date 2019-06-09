@@ -7,9 +7,10 @@
   (let [db-config (:database config)
         db-spec   {:dbtype   (-> db-config :adapter)
                    :dbname   (-> db-config :database)
-                   :jdbc-url (-> db-config :jdbc-url)
+                   :host     (-> db-config :hostname)
                    :user     (-> db-config :username)
-                   :password (-> db-config :password)}]
+                   :password (-> db-config :password)
+                   :port     (-> db-config :port)}]
     {:datastore  (jdbc/sql-database db-spec)
      :migrations (jdbc/load-resources "migrations")}))
 

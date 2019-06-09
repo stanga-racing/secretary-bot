@@ -18,21 +18,17 @@
          _
          username
          password
-         url
+         hostname
          port
          database] (clojure.string/split
                      (e/env :database-url)
                      #"[:\/@]")]
     {:adapter  "postgresql"
      :database database
-     :jdbc-url (str "jdbc:postgres://"
-                    url
-                    ":"
-                    port
-                    "/"
-                    database)
+     :hostname hostname
      :username username
-     :password password}))
+     :password password
+     :port     port}))
 
 (defn config []
   {:post [(spec/valid? ::config %)]}
