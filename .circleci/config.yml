@@ -38,7 +38,7 @@ jobs:
           command: |
             docker build \
               --rm \
-              -t $HEROKU_APP_NAME \
+              -t $HEROKU_APP_NAME:latest \
               -f src/docker/Dockerfile \
               .
       - run:
@@ -48,7 +48,7 @@ jobs:
       - run:
           name: Archive Docker Image
           command: |
-            docker save -o ~/secretary_bot/docker/image.tar $HEROKU_APP_NAME
+            docker save -o ~/secretary_bot/docker/image.tar $HEROKU_APP_NAME:latest
       - save_cache:
           name: Saving Docker Image To Cache
           key: v1_docker-{{ .Environment.CIRCLE_SHA1 }}
