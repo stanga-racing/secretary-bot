@@ -12,11 +12,8 @@ WORKDIR /build
 RUN lein deps
 RUN lein uberjar
 
-FROM alpine:latest
+FROM stangaracing/stanga-secretary-bot-runtime:latest
 
-RUN apk add --no-cache openjdk8-jre
-RUN mkdir /stanga
 WORKDIR /stanga
 COPY --from=build /build/target/stanga.secretary-bot-0.1.0-standalone.jar .
-
 CMD ["java", "-jar", "stanga.secretary-bot-0.1.0-standalone.jar"]
