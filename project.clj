@@ -1,4 +1,4 @@
-(defproject stanga.secretary-bot "0.1.0"
+(defproject secretary-bot "0.1.0"
   :description "Stanga Secretary Bot"
   :url "https://github.com/stanga-racing/secretary-bot"
   :dependencies [[org.clojure/clojure "1.10.0"]

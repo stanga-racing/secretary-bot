@@ -74,7 +74,7 @@ jobs:
     working_directory:
       ~/secretary_bot
     docker:
-      - image: stangaracing/stanga-secretary-bot-build:latest
+      - image: stangaracing/stanga-secretary-bot-heroku:latest
     steps:
       - restore_cache:
           name: Restoring Docker Image From Cache
