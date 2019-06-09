@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  heroku: circleci/heroku@0.0.8
+
 executors:
   docker_publisher:
     docker:
@@ -62,6 +65,14 @@ jobs:
           key: v1_docker-{{ .Environment.CIRCLE_SHA1 }}
       - setup_remote_docker
       - run:
+          name: Install Heroku CLI Dependencies
+          command: |
+            apk add --no-cache bash curl nodejs
+      - run:
+          name: Install Heroku CLI
+          command: |
+            curl https://cli-assets.heroku.com/install.sh | sh
+      - run:
           name: Load Docker Image
           command: |
             docker load -i ~/secretary_bot/docker/image.tar
@@ -79,6 +90,10 @@ jobs:
           name: Push Image to Heroku's Docker Registry
           command: |
             docker push registry.heroku.com/$HEROKU_APP_NAME/worker
+      - run:
+          name: Release Docker Image
+          command: |
+            heroku container:release -a $HEROKU_APP_NAME worker
 
 workflows:
   version: 2
