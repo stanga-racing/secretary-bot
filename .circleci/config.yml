@@ -11,7 +11,8 @@ executors:
 jobs:
   checkout_code:
     working_directory: ~/secretary_bot
-    executor: docker_publisher
+    docker:
+      - image: buildpack-deps:latest
     steps:
       - checkout
       - save_cache:
