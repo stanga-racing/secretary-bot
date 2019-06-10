@@ -13,6 +13,7 @@
                  [jarohen/chime "0.2.2"]
                  [net.cgrand/xforms "0.19.0"]
                  [org.postgresql/postgresql "42.2.5"]
+                 [org.slf4j/slf4j-api "1.7.26"]
                  [org.slf4j/slf4j-log4j12 "1.7.26"]
                  [ragtime "0.8.0"]]
   :source-paths ["src/clj"]
