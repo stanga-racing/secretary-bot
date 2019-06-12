@@ -1,6 +1,33 @@
 (ns stanga.db
-  (:require [com.stuartsierra.component :as component]
+  (:require [camel-snake-kebab.core :as csk]
+            [camel-snake-kebab.extras :as cse]
+            [clj-time.coerce :as c]
+            [clojure.java.jdbc :as jdbc]
+            [com.stuartsierra.component :as component]
             [hikari-cp.core :as pool]))
+
+(defn- ->sql-time [x]
+  (cond-> x
+    (= (class x) org.joda.time.DateTime)
+    (c/to-sql-time)))
+
+(defn ->joda-time [x]
+  (cond-> x
+    (= (class x) java.sql.Timestamp)
+    (c/to-date-time)))
+
+(defn- coerce->db [params]
+  (->> params
+       (clojure.walk/prewalk ->sql-time)
+       (cse/transform-keys csk/->snake_case)))
+
+(defn- coerce->clj [result]
+  (->> result
+       (clojure.walk/prewalk ->joda-time)
+       (cse/transform-keys csk/->kebab-case)))
+
+(defprotocol DbExec
+  (exec [this query params]))
 
 (defrecord DbPool [config]
   component/Lifecycle
@@ -21,4 +48,13 @@
   (stop [this]
     (when-let [datasource (:datasource this)]
       (pool/close-datasource datasource))
-    (assoc this :datasource nil)))
+    (assoc this :datasource nil))
+
+  DbExec
+
+  (exec [this query params]
+    (jdbc/with-db-transaction [connection {:datasource (:datasource this)}]
+      (let [coerced (coerce->db params)
+            result  (query coerced
+                           {:connection connection})]
+        (coerce->clj result)))))

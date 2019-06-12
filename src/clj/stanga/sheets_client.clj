@@ -1,7 +1,6 @@
 (ns stanga.sheets-client
   (:require [cheshire.core :as json]
             [clj-http.client :as http]
-            [clj-time.core :as t]
             [clj-time.format :as f]
             [net.cgrand.xforms :as xf]))
 
@@ -25,9 +24,6 @@
           :else
           date-str)))
 
-(defn- future-date? [{date :date}]
-  (t/before? (t/now) date))
-
 (defn- get-url [path]
   (str base-url path))
 
@@ -42,11 +38,10 @@
 
 (def xform-races (comp (map :values)
                        (map first)
-                       (map (partial zipmap [:date :deadline :name]))
-                       (map #(update % :date (comp parse-date normalize-date)))
-                       (map #(update % :deadline (comp parse-date)))
-                       (filter future-date?)
-                       (xf/sort-by :date)))
+                       (map (partial zipmap [:race-date :race-enrollment-deadline :race-name]))
+                       (map #(update % :race-date (comp parse-date normalize-date)))
+                       (map #(update % :race-enrollment-deadline (comp parse-date)))
+                       (xf/sort-by :race-date)))
 
 (defn get-races [config]
   (let [spreadsheet-id (:master-excel-spreadsheet-id config)

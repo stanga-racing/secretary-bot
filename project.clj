@@ -4,6 +4,7 @@
   :dependencies [[org.clojure/clojure "1.10.0"]
                  [org.clojure/core.async "0.4.490"]
                  [org.clojure/tools.logging "0.4.1"]
+                 [camel-snake-kebab "0.4.0"]
                  [cheshire "5.8.1"]
                  [clj-http "3.10.0"]
                  [clj-time "0.15.0"]
@@ -15,7 +16,8 @@
                  [org.postgresql/postgresql "42.2.5"]
                  [org.slf4j/slf4j-api "1.7.26"]
                  [org.slf4j/slf4j-log4j12 "1.7.26"]
-                 [ragtime "0.8.0"]]
+                 [ragtime "0.8.0"]
+                 [yesql "0.5.3"]]
   :source-paths ["src/clj"]
   :main ^:skip-aot stanga.main
   :aot [stanga.main]
