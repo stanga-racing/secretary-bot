@@ -26,8 +26,10 @@
        (clojure.walk/prewalk ->joda-time)
        (cse/transform-keys csk/->kebab-case)))
 
-(defprotocol DbExec
-  (exec [this query params]))
+(defn exec [connection query params]
+  (let [coerced-params (coerce->db params)
+        result         (query coerced-params connection)]
+    (coerce->clj result)))
 
 (defrecord DbPool [config]
   component/Lifecycle
@@ -48,13 +50,4 @@
   (stop [this]
     (when-let [datasource (:datasource this)]
       (pool/close-datasource datasource))
-    (assoc this :datasource nil))
-
-  DbExec
-
-  (exec [this query params]
-    (jdbc/with-db-transaction [connection {:datasource (:datasource this)}]
-      (let [coerced (coerce->db params)
-            result  (query coerced
-                           {:connection connection})]
-        (coerce->clj result)))))
+    (assoc this :datasource nil)))

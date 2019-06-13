@@ -1,6 +1,7 @@
 (ns stanga.app
   (:require [clj-time.core :as t]
             [clj-time.format :as f]
+            [clojure.java.jdbc :as jdbc]
             [clojure.tools.logging :as log]
             [stanga.races :as races]
             [stanga.slack :as slack]))
@@ -35,12 +36,14 @@
   App
 
   (run [this]
-    (races/refresh-races-cache config db)
-    (let [races (->> (races/get-races db)
-                     (transduce xform-reminders conj))]
-      (if (< 0 (count races))
-        (let [msg (str "<!channel> Stangan automatisoitu sihteeri tässä hei! Seuraavien kilpailuiden ilmoittautumisten deadline lähestyy:"
-                       "\n\n"
-                       (clojure.string/join "\n" races))]
-          (slack/send-message config msg))
-        (log/info (str "No enrollment deadlines within next " notification-treshold-days " days"))))))
+    (jdbc/with-db-transaction [connection {:datasource (:datasource db)}]
+      (let [db-conn {:connection connection}]
+        (races/refresh-races-cache config db-conn)
+        (let [races (->> (races/get-races db-conn)
+                         (transduce xform-reminders conj))]
+          (if (< 0 (count races))
+            (let [msg (str "<!channel> Stangan automatisoitu sihteeri tässä hei! Seuraavien kilpailuiden ilmoittautumisten deadline lähestyy:"
+                           "\n\n"
+                           (clojure.string/join "\n" races))]
+              (slack/send-message config msg))
+            (log/info (str "No enrollment deadlines within next " notification-treshold-days " days"))))))))
