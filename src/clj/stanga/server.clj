@@ -3,6 +3,7 @@
             [clj-time.core :as t]
             [clj-time.periodic :as p]
             [clojure.core.async :as async]
+            [clojure.tools.logging :as log]
             [com.stuartsierra.component :as component]))
 
 (defn- run-time [date]
@@ -32,7 +33,7 @@
           (try
             (.run app)
             (catch Exception e
-              (println (str "Error: " e))))
+              (log/error (str "Error: " e))))
           (recur)))
       (assoc this :scheduler scheduler)))
 
