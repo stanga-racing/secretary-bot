@@ -3,8 +3,10 @@
             [clj-time.format :as f]
             [clojure.java.jdbc :as jdbc]
             [clojure.tools.logging :as log]
+            [stanga.db :as d]
             [stanga.races :as races]
-            [stanga.slack :as slack]))
+            [stanga.slack :as slack]
+            [stanga.store.tasks-store :as tasks-store]))
 
 (defprotocol App
   (run [this]))
@@ -36,14 +38,13 @@
   App
 
   (run [this]
-    (jdbc/with-db-transaction [connection {:datasource (:datasource db-pool)}]
-      (let [db {:connection connection}]
-        (races/refresh-races-cache config db)
-        (let [races (->> (races/get-races db)
-                         (transduce xform-reminders conj))]
-          (if (< 0 (count races))
-            (let [msg (str "<!channel> Stangan automatisoitu sihteeri tässä hei! Seuraavien kilpailuiden ilmoittautumisten deadline lähestyy:"
-                           "\n\n"
-                           (clojure.string/join "\n" races))]
-              (slack/send-message config msg))
-            (log/info (str "No enrollment deadlines within next " notification-treshold-days " days"))))))))
+    (d/with-transaction [db db-pool]
+      (races/refresh-races-cache config db)
+      (let [races (->> (races/get-races db)
+                       (transduce xform-reminders conj))]
+        (if (< 0 (count races))
+          (let [msg (str "<!channel> Stangan automatisoitu sihteeri tässä hei! Seuraavien kilpailuiden ilmoittautumisten deadline lähestyy:"
+                         "\n\n"
+                         (clojure.string/join "\n" races))]
+            (slack/send-message config msg))
+          (log/info (str "No enrollment deadlines within next " notification-treshold-days " days")))))))

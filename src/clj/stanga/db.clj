@@ -31,6 +31,11 @@
         result         (query coerced-params db)]
     (coerce->clj result)))
 
+(defmacro with-transaction [binding & body]
+  `(jdbc/with-db-transaction [connection# {:datasource (:datasource ~(second binding))}]
+     (let [~(first binding) {:connection connection#}]
+       ~@body)))
+
 (defrecord DbPool [config]
   component/Lifecycle
 
