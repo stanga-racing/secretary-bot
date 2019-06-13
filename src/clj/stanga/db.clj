@@ -26,9 +26,9 @@
        (clojure.walk/prewalk ->joda-time)
        (cse/transform-keys csk/->kebab-case)))
 
-(defn exec [connection query params]
+(defn exec [db query params]
   (let [coerced-params (coerce->db params)
-        result         (query coerced-params connection)]
+        result         (query coerced-params db)]
     (coerce->clj result)))
 
 (defrecord DbPool [config]

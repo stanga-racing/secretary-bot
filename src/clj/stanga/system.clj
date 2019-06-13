@@ -10,13 +10,13 @@
   (component/system-map
     :app (component/using
            (app/map->ReminderApp {})
-           [:config :db])
+           [:config :db-pool])
 
     :config (config/config)
 
-    :db (component/using
-          (db/map->DbPool {})
-          [:config :migrations])
+    :db-pool (component/using
+               (db/map->DbPool {})
+               [:config :migrations])
 
     :migrations (component/using
                   (migrations/map->MigrationRunner {})

@@ -7,12 +7,12 @@
 (sql/defquery upsert-race<! "sql/upsert-race.sql")
 (sql/defquery get-races* "sql/get-races.sql")
 
-(defn upsert-race [connection race]
-  (let [result (db/exec connection
+(defn upsert-race [db race]
+  (let [result (db/exec db
                         upsert-race<!
                         (update race :race-date t/to-sql-date))]
     (log/info (str "UPSERT race: " result))))
 
-(defn get-races [connection]
-  (db/exec connection get-races* {}))
+(defn get-races [db]
+  (db/exec db get-races* {}))
 

@@ -32,14 +32,14 @@
 (def xform-reminders (comp (filter should-remind?)
                            (map ->slack-message)))
 
-(defrecord ReminderApp [config db]
+(defrecord ReminderApp [config db-pool]
   App
 
   (run [this]
-    (jdbc/with-db-transaction [connection {:datasource (:datasource db)}]
-      (let [db-conn {:connection connection}]
-        (races/refresh-races-cache config db-conn)
-        (let [races (->> (races/get-races db-conn)
+    (jdbc/with-db-transaction [connection {:datasource (:datasource db-pool)}]
+      (let [db {:connection connection}]
+        (races/refresh-races-cache config db)
+        (let [races (->> (races/get-races db)
                          (transduce xform-reminders conj))]
           (if (< 0 (count races))
             (let [msg (str "<!channel> Stangan automatisoitu sihteeri tässä hei! Seuraavien kilpailuiden ilmoittautumisten deadline lähestyy:"
