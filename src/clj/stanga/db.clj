@@ -6,25 +6,44 @@
             [com.stuartsierra.component :as component]
             [hikari-cp.core :as pool]))
 
-(defn- ->sql-time [x]
-  (cond-> x
-    (= (class x) org.joda.time.DateTime)
-    (c/to-sql-time)))
+(defn- key-val-pair? [x]
+  (and (vector? x)
+       (= (count x) 2)))
 
-(defn ->joda-time [x]
-  (cond-> x
-    (= (class x) java.sql.Timestamp)
-    (c/to-date-time)))
+(defn- str->kwd? [key-val-pair]
+  (some #{:task-execution-type
+          :task-execution-status}
+        [(first key-val-pair)]))
 
 (defn- coerce->db [params]
   (->> params
-       (clojure.walk/prewalk ->sql-time)
-       (cse/transform-keys csk/->snake_case)))
+       (cse/transform-keys csk/->snake_case)
+       (clojure.walk/prewalk (fn ->db [x]
+                               (cond
+                                 (= (class x) org.joda.time.DateTime)
+                                 (c/to-sql-time x)
+
+                                 (and (key-val-pair? x)
+                                      (-> x second keyword?))
+                                 (update x 1 (comp csk/->snake_case name))
+
+                                 :else
+                                 x)))))
 
 (defn- coerce->clj [result]
   (->> result
-       (clojure.walk/prewalk ->joda-time)
-       (cse/transform-keys csk/->kebab-case)))
+       (cse/transform-keys csk/->kebab-case)
+       (clojure.walk/prewalk (fn ->clj [x]
+                               (cond
+                                 (= (class x) java.sql.Timestamp)
+                                 (c/to-date-time x)
+
+                                 (and (key-val-pair? x)
+                                      (str->kwd? x))
+                                 (update x 1 (comp csk/->kebab-case keyword))
+
+                                 :else
+                                 x)))))
 
 (defn exec [db query params]
   (let [coerced-params (coerce->db params)

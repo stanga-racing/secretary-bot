@@ -4,18 +4,8 @@
             [clj-time.periodic :as p]
             [clojure.core.async :as async]
             [clojure.tools.logging :as log]
-            [com.stuartsierra.component :as component]))
-
-(defn- run-time [date]
-  (let [year  (t/year date)
-        month (t/month date)
-        day   (t/day date)]
-    (t/date-time year
-                 month
-                 day
-                 12
-                 0
-                 0)))
+            [com.stuartsierra.component :as component]
+            [stanga.time :as time]))
 
 (defrecord Server [app]
   component/Lifecycle
@@ -24,7 +14,7 @@
     (let [scheduler (c/chime-ch
                       (->> (p/periodic-seq (t/from-now (t/days 1))
                                            (t/days 1))
-                           (map run-time)
+                           (map time/at-midday)
                            (cons (t/from-now (t/seconds 1))))
                       {:ch (async/chan
                              (async/sliding-buffer 1))})]
