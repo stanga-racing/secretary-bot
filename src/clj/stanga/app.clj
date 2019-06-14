@@ -15,7 +15,7 @@
 
 (def date-formatter (f/formatter "dd.MM.yyyy"))
 
-(def notification-treshold-days 3)
+(def notification-treshold-days 2)
 
 (defn- should-remind? [race]
   (when-let [deadline (:race-enrollment-deadline race)]
