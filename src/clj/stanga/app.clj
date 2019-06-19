@@ -35,7 +35,7 @@
        (-> race :race-enrollment-deadline format-date)))
 
 (defn- format-slack-message [messages]
-  (str "<!channel> Stangan automatisoitu sihteeri tässä hei! Seuraavien kilpailuiden ilmoittautumisten deadline lähestyy:"
+  (str "<!maantie_kisaajat> Stangan automatisoitu sihteeri tässä hei! Seuraavien kilpailuiden ilmoittautumisten deadline lähestyy:"
        "\n\n"
        (clojure.string/join "\n" messages)))
 
